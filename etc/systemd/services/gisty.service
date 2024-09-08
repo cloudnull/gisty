@@ -1,0 +1,18 @@
+[Unit]
+Description=Gisty
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/podman kill gisty
+ExecStartPre=-/usr/bin/podman rm gisty
+ExecStart=/usr/bin/podman run --name gisty \
+                              -e KEYSTONE_APP_ID=XXX \
+                              -e KEYSTONE_AUTH_URL=XXX \
+                              -e KEYSTONE_APP_SECRET=XXX \
+                              --network=host \
+                              ghcr.io/cloudnull/gisty:gisty
+
+[Install]
+WantedBy=multi-user.target

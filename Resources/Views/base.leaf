@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@
         <meta name="twitter:title" content="Gisty" />
         <meta name="twitter:description" content="Get the gist and get on with it" />
     </head>
+
     <body class="bg-gray-900 text-gray-300 font-sans flex flex-col h-screen justify-between">
         <!-- Solid Bar Header -->
         <header class="bg-gray-800 shadow-lg">
@@ -28,8 +30,9 @@
             #import("content")
         </main>
         <!-- Footer -->
-        <div <footer class="bg-gray-800 p-4 mt-4 text-center text-gray-500 sticky w-full bottom-0">
-            <p>Cloudnull &copy; 2024 Gisty.link</p>
-            </footer>
+        <footer class="bg-gray-800 p-4 mt-4 text-center text-gray-500 sticky w-full bottom-0 ">
+            <p>Cloudnull &copy; 2024 Gisty.link - <a href="https://github.com/cloudnull/gisty">Open Source Code</a></p>
+        </footer>
     </body>
+
 </html>
