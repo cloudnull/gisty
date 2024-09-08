@@ -1,6 +1,4 @@
-export KEYSTONE_AUTH_URL=xxx
-export KEYSTONE_USERNAME=xxx
-export KEYSTONE_PASSWORD=xxx
-export KEYSTONE_PROJECT_NAME=xxx
-export KEYSTONE_DOMAIN_NAME=xxx
-export SWIFT_CONTAINER_NAME=xxx
+export KEYSTONE_AUTH_URL=https://keystone.api.sjc3.rackspacecloud.com/
+export KEYSTONE_APP_ID=xxxx
+export KEYSTONE_APP_SECRET=xxxx
+export SWIFT_CONTAINER_NAME=gisty

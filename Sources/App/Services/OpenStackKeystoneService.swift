@@ -5,10 +5,8 @@ import Foundation
 final class OpenStackKeystoneService {
     private let client: Client
     private let authURL: String
-    private let username: String
-    private let password: String
-    private let projectName: String
-    private let domainName: String
+    private let appId: String
+    private let appSecret: String
 
     // Cached token and expiration
     private(set) var authToken: String?
@@ -22,60 +20,32 @@ final class OpenStackKeystoneService {
             throw Abort(.internalServerError, reason: "Missing KEYSTONE_AUTH_URL environment variable")
         }
 
-        guard let username = Environment.get("KEYSTONE_USERNAME") else {
-            throw Abort(.internalServerError, reason: "Missing KEYSTONE_USERNAME environment variable")
+        guard let appId = Environment.get("KEYSTONE_APP_ID") else {
+            throw Abort(.internalServerError, reason: "Missing KEYSTONE_APP_ID environment variable")
         }
 
-        guard let password = Environment.get("KEYSTONE_PASSWORD") else {
-            throw Abort(.internalServerError, reason: "Missing KEYSTONE_PASSWORD environment variable")
-        }
-
-        guard let projectName = Environment.get("KEYSTONE_PROJECT_NAME") else {
-            throw Abort(.internalServerError, reason: "Missing KEYSTONE_PROJECT_NAME environment variable")
-        }
-
-        guard let domainName = Environment.get("KEYSTONE_DOMAIN_NAME") else {
-            throw Abort(.internalServerError, reason: "Missing KEYSTONE_DOMAIN_NAME environment variable")
+        guard let appSecret = Environment.get("KEYSTONE_APP_SECRET") else {
+            throw Abort(.internalServerError, reason: "Missing KEYSTONE_APP_SECRET environment variable")
         }
 
         self.client = client
         self.authURL = authURL
-        self.username = username
-        self.password = password
-        self.projectName = projectName
-        self.domainName = domainName
+        self.appId = appId
+        self.appSecret = appSecret
     }
 
     // Struct for the authentication payload, conforming to Content
     struct KeystoneAuthPayload: Content {
         struct Auth: Content {
             struct Identity: Content {
-                struct Password: Content {
-                    struct User: Content {
-                        let name: String
-                        let password: String
-                        struct Domain: Content {
-                            let name: String
-                        }
-                        let domain: Domain
-                    }
-                    let user: User
+                struct ApplicationCredential: Content {
+                    let id: String
+                    let secret: String
                 }
+                let application_credential: ApplicationCredential
                 let methods: [String]
-                let password: Password
-            }
-            struct Scope: Content {
-                struct Project: Content {
-                    let name: String
-                    struct Domain: Content {
-                        let name: String
-                    }
-                    let domain: Domain
-                }
-                let project: Project
             }
             let identity: Identity
-            let scope: Scope
         }
         let auth: Auth
     }
@@ -85,24 +55,11 @@ final class OpenStackKeystoneService {
         let authPayload = KeystoneAuthPayload(
             auth: KeystoneAuthPayload.Auth(
                 identity: KeystoneAuthPayload.Auth.Identity(
-                    methods: ["password"],
-                    password: KeystoneAuthPayload.Auth.Identity.Password(
-                        user: KeystoneAuthPayload.Auth.Identity.Password.User(
-                            name: username,
-                            password: password,
-                            domain: KeystoneAuthPayload.Auth.Identity.Password.User.Domain(
-                                name: domainName
-                            )
-                        )
-                    )
-                ),
-                scope: KeystoneAuthPayload.Auth.Scope(
-                    project: KeystoneAuthPayload.Auth.Scope.Project(
-                        name: projectName,
-                        domain: KeystoneAuthPayload.Auth.Scope.Project.Domain(
-                            name: domainName
-                        )
-                    )
+                    application_credential: KeystoneAuthPayload.Auth.Identity.ApplicationCredential(
+                        id: appId,
+                        secret: appSecret
+                    ),
+                    methods: ["application_credential"]
                 )
             )
         )
