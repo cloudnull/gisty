@@ -1,0 +1,48 @@
+#extend("base"):
+#export("title"): Submit Content #endexport
+#export("content"):
+
+<div class="relative isolate overflow-hidden bg-gray-900 py-16 rounded-lg">
+    <img src="/assets/openstack.png" alt="OpenStack Service Map"
+        class="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center brightness-5 rounded-lg">
+    <div class="hidden sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl"
+        aria-hidden="true">
+        <div class="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#49ff46] to-[#6ffffb] opacity-20"
+            style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
+        </div>
+    </div>
+    <div class="absolute -top-52 left-1/2 -z-10 -translate-x-1/2 transform-gpu blur-3xl sm:top-[-28rem] sm:ml-16 sm:translate-x-0 sm:transform-gpu"
+        aria-hidden="true">
+        <div class="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#49ff46] to-[#6ffffb] opacity-20"
+            style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
+        </div>
+    </div>
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:mx-0">
+            <h2 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">Welcome to Gisty</h2>
+            <p class="mt-6 text-lg leading-8 text-gray-300">Easily share your content and gists with a simple link.
+                This platform lets you submit content, store it securely, and retrieve it anytime. Use the simple form
+                to submit your
+                content, and we'll generate a unique link for you to share.</p>
+        </div>
+        <div class="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
+            <p class="mt-6 text-lg leading-8 text-gray-300">Built from Open Infrastructure.</p>
+            <div
+                class="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-10">
+                <a href="https://www.swift.org">Swift <span aria-hidden="true">&rarr;</span></a>
+                <a href="https://vapor.codes">Vapor <span aria-hidden="true">&rarr;</span></a>
+                <a href="https://docs.openstack.org/swift/latest">OpenStack Swift <span aria-hidden="true">&rarr;</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="/create" method="POST" class="mt-4">
+    <div class="mb-4">
+        <textarea id="textInput" name="textInput" rows="15" placeholder="Enter your content here..."
+            class="w-full p-2 bg-gray-300 border border-gray-700 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"></textarea>
+    </div>
+    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg">Submit</button>
+</form>
+#endexport
+#endextend

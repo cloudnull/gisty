@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>#(title)</title>
+        <link href="/styles/output.css" rel="stylesheet">
+        <meta property="og:site_name" content="gisty" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Gisty" />
+        <meta property="og:description" content="Get the gist and get on with it" />
+        <meta property="og:image" content="/assets/toothpaste-tube.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Gisty" />
+        <meta name="twitter:description" content="Get the gist and get on with it" />
+    </head>
+    <body class="bg-gray-900 text-gray-300 font-sans flex flex-col h-screen justify-between">
+        <!-- Solid Bar Header -->
+        <header class="bg-gray-800 shadow-lg">
+            <div class="container mx-auto py-4 px-6 items-center">
+                <a href="/">
+                    <h1 class="text-3xl text-white font-bold">Gisty.link</h1>
+                </a>
+            </div>
+        </header>
+        <!-- Main Content -->
+        <main class="container mx-auto mb-auto p-6">
+            #import("content")
+        </main>
+        <!-- Footer -->
+        <div <footer class="bg-gray-800 p-4 mt-4 text-center text-gray-500 sticky w-full bottom-0">
+            <p>Cloudnull &copy; 2024 Gisty.link</p>
+            </footer>
+    </body>
+</html>
