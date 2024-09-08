@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class="relative mt-16 h-80">
-                <img class="absolute left-0 top-0 w-[57rem] max-w-xl rounded-md bg-white/5 ring-1 ring-white/10 brightness-50"
+                <img class="absolute left-0 top-0 w-[57rem] max-w-xl rounded-md brightness-50 transition-all duration-300 cursor-pointer filter grayscale hover:grayscale-0"
                     src="/assets/error.png"
                     alt="Sad paste">
             </div>
