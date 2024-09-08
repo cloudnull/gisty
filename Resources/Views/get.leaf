@@ -8,7 +8,7 @@
 <div class="rounded-lg">
     <div class="lg:flex lg:items-center lg:justify-between">
         <div class="min-w-0 flex-1">
-            <p class="text-xl font-bold leading-7 text-gray-300 sm:truncate sm:text-lg sm:tracking-tight"><strong
+            <p class="text-xs font-bold text-gray-300"><strong
                     class="font-semibold">Gisty:</strong>#(currentHash)</p>
             <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
                 <div class="mt-2 flex items-center text-sm text-gray-500">

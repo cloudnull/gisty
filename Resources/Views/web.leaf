@@ -31,8 +31,8 @@
                 class="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-10">
                 <a href="https://www.swift.org">Swift <span aria-hidden="true">&rarr;</span></a>
                 <a href="https://vapor.codes">Vapor <span aria-hidden="true">&rarr;</span></a>
-                <a href="https://docs.openstack.org/swift/latest">OpenStack Swift <span
-                        aria-hidden="true">&rarr;</span></a>
+                <a href="https://docs.openstack.org">OpenStack <span aria-hidden="true">&rarr;</span> Keystone <span
+                        aria-hidden="true">&rarr;</span> Swift <span aria-hidden="true">&rarr;</span></a></a>
                 <a href="https://cloudnull.io"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
