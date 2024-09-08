@@ -27,3 +27,37 @@ export KEYSTONE_APP_ID="your-username"
 export KEYSTONE_APP_SECRET="your-password"
 export SWIFT_CONTAINER_NAME="gisty"
 ```
+
+### Building the container
+
+Running the build locally is simple.
+
+``` shell
+docker build . -t $USER/gisty
+```
+
+> Images are also provided in this repo.
+
+## Starting the service
+
+``` bash
+docker run -e KEYSTONE_APP_ID=XXX -e KEYSTONE_AUTH_URL=XXX -e KEYSTONE_APP_SECRET=XXX --network=host $USER/gisty
+```
+
+## Accessing the service
+
+Open your browser and navigate to `http://localhost:8080` to access Gisty.link.
+
+### Usage
+
+Access and usage is simple.
+
+#### Submit Content
+
+1. Go to the home page (`/`).
+2. Fill out the form with your content.
+3. Click "Submit". You will be redirected to a unique link where your content is accessible.
+
+#### Retrieve Content
+- Use the unique link provided after submission to access your content.
+- RAW content can be accessed by simply accessing the RAW URL.
