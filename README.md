@@ -59,5 +59,33 @@ Access and usage is simple.
 3. Click "Submit". You will be redirected to a unique link where your content is accessible.
 
 #### Retrieve Content
+
 - Use the unique link provided after submission to access your content.
 - RAW content can be accessed by simply accessing the RAW URL.
+
+## API Interactions
+
+API interactions are simple with two main methods, `POST` and `GET`.
+
+### POST Content
+
+``` shell
+curl -D - -X POST https://gisty.link/create -H "Content-Type: application/x-www-form-urlencoded" -d "textInput=thingames"
+```
+
+The output will return the new item location
+
+``` shell
+HTTP/1.1 303 See Other
+Server: nginx/1.22.1
+Date: Sun, 08 Sep 2024 19:43:10 GMT
+Content-Length: 0
+Connection: keep-alive
+location: /71b6eada156eeafee3feb6c464faf0edc8aa5636
+```
+
+### GET Content
+
+``` shell
+curl https://gisty.link/71b6eada156eeafee3feb6c464faf0edc8aa5636/raw
+```

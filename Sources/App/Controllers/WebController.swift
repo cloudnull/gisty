@@ -9,6 +9,8 @@ final class WebController: RouteCollection {
 
     func boot(routes: RoutesBuilder) throws {
         routes.get(use: renderWeb)
+        routes.get("about", use: renderAbout)
+        routes.get("api", use: renderApi)
         routes.on(.POST, "create", body: .collect(maxSize: "100mb"), use: handleSubmit)
         let webRoute = routes.grouped(":hashedContent")
         webRoute.get(use: renderContent)
@@ -18,6 +20,25 @@ final class WebController: RouteCollection {
     // Render the web view
     func renderWeb(req: Request) async throws -> View {
         return try await req.view.render("web", ["currentPath": req.url.path])
+    }
+
+    // Render the api view
+    func renderApi(req: Request) async throws -> View {
+        return try await req.view.render("api", ["currentPath": req.url.path])
+    }
+
+    // Render the about view
+    func renderAbout(req: Request) async throws -> View {
+        let containerHeaders = try await swiftClient.fetchContainer()
+        return try await req.view.render(
+            "about",
+            [
+                "currentObjects": containerHeaders["X-Container-Object-Count"].first,
+                "currentBytes": containerHeaders["X-Container-Bytes-Used"].first,
+                "lastModified": containerHeaders["Date"].first,
+                "currentPath": req.url.path,
+            ]
+        )
     }
 
     // Handle web submission, hash the content using SHA-1, and use the hash as the object name

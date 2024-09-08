@@ -1,0 +1,123 @@
+#extend("base"):
+#export("title"): Error Content Not Found #endexport
+#export("content"):
+<link rel="stylesheet" href="/styles/github.css">
+<script src="/js/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+<div class="rounded-xl">
+    <div class="bg-gray-800 py-24 sm:py-32 rounded-xl">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8 z-0 isolate overflow-hidden">
+            <div class="relative mx-auto max-w-2xl lg:mx-0 flex flex-col">
+                <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">The Gisty API</h2>
+                <p class="mt-2 text-lg leading-8 text-gray-300">While gisty is a modern web application, it also
+                    supports a full featured API.
+                </p>
+                <div
+                    class="flex flex-col ml-auto absolute left-3/4 xl:left-full hidden lg:block top-96 -z-20 h-[64rem] w-[64rem] -translate-y-1/2">
+                    <img class="w-auto brightness-50 transition-all duration-300 cursor-pointer filter grayscale hover:grayscale-0"
+                        src="/assets/happy.png" alt="Sad paste">
+                </div>
+            </div>
+            <div
+                class="mx-auto isolate overflow-hidden z-10 mt-10 max-w-2xl gap-x-8 gap-y-16 border-t border-gray-400 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                <article class="flex max-w-xl flex-col items-start justify-between">
+                    <div class="flex items-center gap-x-4 text-xs">
+                        <object class="relative z-10 rounded-xl bg-emerald-700 px-5 py-1.5 text-gray-200">POST</object>
+                    </div>
+                    <div class="group relative">
+                        <h3 class="mt-3 text-lg font-semibold leading-6 text-gray-300">
+                            <a href="#">
+                                <span class="absolute inset-0"></span>
+                                Creating content on Gisty
+                            </a>
+                        </h3>
+                        <p class="mt-5 line-clamp-3 text-sm leading-6 text-gray-500">Creating content is simple, the
+                            following example was performed using <code>cURL</code>.</p>
+                    </div>
+                    <div class="relative mt-8 flex items-center gap-x-4">
+                        <div class="text-sm leading-6">
+                            <p class="font-semibold text-gray-300">
+                                <a href="#">
+                                    <span class="absolute inset-0"></span>
+                                    GET Example
+                                </a>
+                            <pre>
+                                    <code class="rounded-lg">
+curl -D - -X POST https://gisty.link/create -H "Content-Type: application/x-www-form-urlencoded" -d "textInput=thingames"
+                                    </code>
+                                </pre>
+                            <p>The command will return output with the location of the object.</p>
+                            <pre>
+                                    <code class="rounded-lg">
+HTTP/1.1 303 See Other
+Server: nginx/1.22.1
+Date: Sun, 08 Sep 2024 19:43:10 GMT
+Content-Length: 0
+Connection: keep-alive
+location: /71b6eada156eeafee3feb6c464faf0edc8aa5636
+                                    </code>
+                                </pre>
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div
+                class="mx-auto isolate overflow-hidden z-10 mt-10 max-w-2xl gap-x-8 gap-y-16 border-t border-gray-400 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                <article class="flex max-w-xl flex-col items-start justify-between">
+                    <div class="flex items-center gap-x-4 text-xs">
+                        <object class="relative z-10 rounded-xl bg-gray-700 px-5 py-1.5 text-gray-200">GET</object>
+                    </div>
+                    <div class="group relative">
+                        <h3 class="mt-3 text-lg font-semibold leading-6 text-gray-300">
+                            <a href="#">
+                                <span class="absolute inset-0"></span>
+                                Retrieving content from Gisty
+                            </a>
+                        </h3>
+                        <p class="mt-5 line-clamp-3 text-sm leading-6 text-gray-500">Retrieving content is simple, the
+                            following example was performed using <code>cURL</code>.</p>
+                    </div>
+                    <div class="relative mt-8 flex items-center gap-x-4">
+                        <div class="text-sm leading-6">
+                            <p class="font-semibold text-gray-300">
+                                <a href="#">
+                                    <span class="absolute inset-0"></span>
+                                    GET Example
+                                </a>
+                            <pre>
+                                    <code class="rounded-lg">
+curl -D - https://gisty.link/71b6eada156eeafee3feb6c464faf0edc8aa5636/raw
+                                    </code>
+                                </pre>
+                            <p>The command will return output from the content. Headers are available from the RAW
+                                content which express more information about it.</p>
+                            <pre>
+                                    <code class="rounded-lg">
+HTTP/1.1 200 OK
+Server: nginx/1.22.1
+Date: Sun, 08 Sep 2024 22:49:25 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 9
+Connection: keep-alive
+Etag: "87bc6e8b97f3ab8340c90ebabdf38f6a"
+Last-Modified: Sun, 08 Sep 2024 19:43:11 GMT
+X-Timestamp: 1725824590.99754
+Accept-Ranges: bytes
+X-Trans-Id: tx3f99761ef85d437787feb-0066de29f4sjc
+X-Openstack-Request-Id: tx3f99761ef85d437787feb-0066de29f4sjc
+
+thingames
+                                    </code>
+                                </pre>
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+#endexport
+#endextend

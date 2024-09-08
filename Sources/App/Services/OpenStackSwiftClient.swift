@@ -36,6 +36,13 @@ final class OpenStackSwiftClient {
         }
     }
 
+    // Method to fetch the Headers from OpenStack Swift with retry logic
+    func fetchContainer() async throws -> HTTPHeaders {
+        return try await retryOnUnauthorized {
+            try await self.performContainerHead()
+        }
+    }
+
     // Method to fetch content from OpenStack Swift with retry logic
     func createContainer() async throws {
         return try await retryOnUnauthorized {
@@ -105,6 +112,27 @@ final class OpenStackSwiftClient {
             content: response.body?.getString(at: 0, length: response.body?.readableBytes ?? 0) ?? "No content available",
             headers: response.headers
         )
+    }
+
+    // Perform the actual fetch operation (used inside retry logic)
+    private func performContainerHead() async throws -> HTTPHeaders {
+        guard let swiftStorageURL = keystoneService.swiftStorageURL else {
+            throw Abort(.internalServerError, reason: "Swift Storage URL not available")
+        }
+
+        let authToken = try await keystoneService.getAuthToken()
+
+        let headers: HTTPHeaders = [
+            "X-Auth-Token": authToken
+        ]
+
+        let response = try await client.send(.HEAD, headers: headers, to: "\(swiftStorageURL)/\(containerName)")
+
+        guard response.status == .ok || response.status == .accepted || response.status == .noContent else {
+            throw Abort(.internalServerError, reason: "Failed to fetch content from Swift, status code: \(response.status)")
+        }
+
+        return response.headers
     }
 
     // Generic method to retry on 401 Unauthorized

@@ -19,11 +19,31 @@
     <body class="bg-gray-900 text-gray-300 font-sans flex flex-col h-screen justify-between">
         <!-- Solid Bar Header -->
         <header class="bg-gray-800 shadow-lg">
-            <div class="container mx-auto py-4 px-6 items-center">
-                <a href="/">
-                    <h1 class="text-3xl text-white font-bold">Gisty.link</h1>
-                </a>
-            </div>
+            <nav class="border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+                    <a href="/" class="flex pl-0 md:pl-6 items-center space-x-3 rtl:space-x-reverse">
+                        <div class="bg-emerald-900 rounded-md p-1 shadow-lg">
+                            <img src="/assets/pasted-logo.png" class="h-6" alt="Gisty Logo" />
+                        </div>
+                        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Gisty</span>
+                    </a>
+                    <div class="w-auto flex" id="navbar-solid-bg">
+                        <ul
+                            class="flex flex-row pr-0 md:pr-6 font-medium rounded-lg md:space-x-8 rtl:space-x-reverse md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
+                            <li>
+                                <a href="/about"
+                                    class="block py-2 px-3 text-emerald-500 hover:text-emerald-300 md:p-0 md:bg-transparent md:dark:bg-transparent"
+                                    aria-current="page">About</a>
+                            </li>
+                            <li>
+                                <a href="/api"
+                                    class="block py-2 px-3 text-emerald-500 hover:text-emerald-300 md:p-0 md:bg-transparent md:dark:bg-transparent"
+                                    aria-current="page">API</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
         </header>
         <!-- Main Content -->
         <main class="container mx-auto mb-auto p-6">
