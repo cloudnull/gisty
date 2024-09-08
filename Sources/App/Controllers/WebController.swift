@@ -39,7 +39,12 @@ final class WebController: RouteCollection {
             return try await req.view.render("error", ["content": "No content available", "currentPath": req.url.path,])
         }
         do {
-            let pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
+            var pasteContent: OpenStackSwiftClient.returnType!
+            let clock = ContinuousClock()
+            let result = try await clock.measure {
+                pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
+            }
+            let duration = Float(result.components.attoseconds) / 1000000000000000000.0
             return try await req.view.render(
                 "get",
                 [
@@ -48,7 +53,8 @@ final class WebController: RouteCollection {
                     "pasteHeaderContentLength": pasteContent.headers["Content-Length"].first,
                     "pasteHeaderContentType": pasteContent.headers["Content-Type"].first,
                     "currentPath": req.url.path,
-                    "currentHash": contentHash
+                    "currentHash": contentHash,
+                    "returnTime": String(duration)
                 ]
             )
         } catch {
