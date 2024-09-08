@@ -1,5 +1,0 @@
-{
-    "ansible.python.interpreterPath": "/bin/python3",
-    "lldb.library": "/usr/lib/liblldb.so",
-    "lldb.launch.expressions": "native"
-}
