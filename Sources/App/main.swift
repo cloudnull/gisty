@@ -7,4 +7,4 @@ defer {
     app.shutdown()
 }
 try await configure(app)
-try app.run()
+try await app.execute()
