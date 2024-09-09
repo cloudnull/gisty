@@ -105,7 +105,7 @@
             </div>
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="mx-auto max-w-2xl lg:mx-0">
-                    <h2 class="text-xl font-bold tracking-tight text-white md:text-3xl inline-flex items-center justify-center mr-4">Powered By OpenStack</h2><img class="" src="/assets/OpenStack-Logo-Mark.png">
+                    <h2 class="text-xl font-bold tracking-tight text-white md:text-3xl align-middle inline-flex items-center justify-center mr-4">Powered By OpenStack</h2><img class="w-8 align-middle inline-flex items-center justify-center" src="/assets/OpenStack-Logo-Mark.png">
                     <p class="mt-6 text-lg leading-8 text-gray-300">This application runs with the simplicity and scale provided by an Open Cloud.</p>
                 </div>
             </div>
