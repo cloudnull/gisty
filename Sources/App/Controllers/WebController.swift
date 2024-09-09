@@ -15,39 +15,6 @@ final class WebController: RouteCollection {
         let webRoute = routes.grouped(":hashedContent")
         webRoute.get(use: renderContent)
         webRoute.get("raw", use: renderContentRaw)
-        webRoute.get("link", use: renderLink)
-    }
-
-    // Render the web view
-    func renderWeb(req: Request) async throws -> View {
-        return try await req.view.render("web", ["currentPath": req.url.path])
-    }
-
-    // Render the api view
-    func renderApi(req: Request) async throws -> View {
-        return try await req.view.render("api", ["currentPath": req.url.path])
-    }
-
-    // Render the api view
-    func renderLink(req: Request) async throws -> View {
-        guard let contentHash = req.parameters.get("hashedContent") else {
-            return try await req.view.render("error", ["content": "No content available", "currentPath": req.url.path,])
-        }
-        return try await req.view.render("link", ["currentPath": req.url.path, "currentHash": contentHash])
-    }
-
-    // Render the about view
-    func renderAbout(req: Request) async throws -> View {
-        let containerHeaders = try await swiftClient.fetchContainer()
-        return try await req.view.render(
-            "about",
-            [
-                "currentObjects": containerHeaders["X-Container-Object-Count"].first,
-                "currentBytes": containerHeaders["X-Container-Bytes-Used"].first,
-                "lastModified": containerHeaders["Date"].first,
-                "currentPath": req.url.path,
-            ]
-        )
     }
 
     // Handle web submission, hash the content using SHA-1, and use the hash as the object name
@@ -78,34 +45,83 @@ final class WebController: RouteCollection {
         if deleteAfterRead == "off" {
             return req.redirect(to: "/\(objectName)", redirectType: .permanent)
         } else {
-            return req.redirect(to: "/\(objectName)/link", redirectType: .permanent)
+            return req.redirect(to: "/\(objectName)?reveal=false", redirectType: .permanent)
         }
     }
 
+    // Render the web view
+    func renderWeb(req: Request) async throws -> View {
+        return try await req.view.render("web", ["currentPath": req.url.path])
+    }
+
+    // Render the api view
+    func renderApi(req: Request) async throws -> View {
+        return try await req.view.render("api", ["currentPath": req.url.path])
+    }
+
+    // Render the about view
+    func renderAbout(req: Request) async throws -> View {
+        let containerHeaders = try await swiftClient.fetchContainerHeaders()
+        return try await req.view.render(
+            "about",
+            [
+                "currentObjects": containerHeaders["X-Container-Object-Count"].first,
+                "currentBytes": containerHeaders["X-Container-Bytes-Used"].first,
+                "lastModified": containerHeaders["Date"].first,
+                "currentPath": req.url.path,
+            ]
+        )
+    }
+
     func renderContent(req: Request) async throws -> View {
+        struct Params: Content {
+            var reveal: String?
+        }
         guard let contentHash = req.parameters.get("hashedContent") else {
             return try await req.view.render("error", ["content": "No content available", "currentPath": req.url.path,])
         }
+        let queryParams = try req.query.decode(Params.self)
         do {
-            var pasteContent: OpenStackSwiftClient.returnType!
             let clock = ContinuousClock()
-            let result = try await clock.measure {
-                pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
+            if queryParams.reveal == "true" || queryParams.reveal == nil {
+                var pasteContent: OpenStackSwiftClient.returnType!
+                let result = try await clock.measure {
+                    pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
+                }
+                let duration = Float(result.components.attoseconds) / 1000000000000000000.0
+                return try await req.view.render(
+                    "get",
+                    [
+                        "pasteContent": pasteContent.content,
+                        "pasteHeaderLastModified": pasteContent.headers["Last-Modified"].first,
+                        "pasteHeaderContentLength": pasteContent.headers["Content-Length"].first,
+                        "pasteHeaderContentType": pasteContent.headers["Content-Type"].first,
+                        "pasteHeaderDeleteAfterRead": pasteContent.headers["X-Object-Meta-DeleteAfterRead"].first,
+                        "currentPath": req.url.path,
+                        "currentHash": contentHash,
+                        "returnTime": String(duration)
+                    ]
+                )
+            } else {
+                var objectHeaders: HTTPHeaders!
+                let result = try await clock.measure {
+                    objectHeaders = try await swiftClient.fetchObjectHeaders(objectName: contentHash)
+                }
+                let duration = Float(result.components.attoseconds) / 1000000000000000000.0
+                return try await req.view.render(
+                    "get",
+                    [
+                        "pasteContentHidden": "true",
+                        "pasteHeaderLastModified": objectHeaders["Last-Modified"].first,
+                        "pasteHeaderContentLength": objectHeaders["Content-Length"].first,
+                        "pasteHeaderContentType": objectHeaders["Content-Type"].first,
+                        "pasteHeaderDeleteAfterRead": objectHeaders["X-Object-Meta-DeleteAfterRead"].first,
+                        "currentPath": req.url.path,
+                        "currentHash": contentHash,
+                        "returnTime": String(duration)
+                    ]
+                )
             }
-            let duration = Float(result.components.attoseconds) / 1000000000000000000.0
-            return try await req.view.render(
-                "get",
-                [
-                    "pasteContent": pasteContent.content,
-                    "pasteHeaderLastModified": pasteContent.headers["Last-Modified"].first,
-                    "pasteHeaderContentLength": pasteContent.headers["Content-Length"].first,
-                    "pasteHeaderContentType": pasteContent.headers["Content-Type"].first,
-                    "pasteHeaderDeleteAfterRead": pasteContent.headers["X-Object-Meta-DeleteAfterRead"].first,
-                    "currentPath": req.url.path,
-                    "currentHash": contentHash,
-                    "returnTime": String(duration)
-                ]
-            )
         } catch {
             return try await req.view.render("error", ["content": "No content available", "currentPath": req.url.path,])
         }

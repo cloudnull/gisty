@@ -41,7 +41,14 @@ final class OpenStackSwiftClient {
     }
 
     // Method to fetch the Headers from OpenStack Swift with retry logic
-    func fetchContainer() async throws -> HTTPHeaders {
+    func fetchObjectHeaders(objectName: String) async throws -> HTTPHeaders {
+        return try await retryOnUnauthorized {
+            try await self.performObjectHead(objectName: objectName)
+        }
+    }
+
+    // Method to fetch the Headers from OpenStack Swift with retry logic
+    func fetchContainerHeaders() async throws -> HTTPHeaders {
         return try await retryOnUnauthorized {
             try await self.performContainerHead()
         }
@@ -71,8 +78,9 @@ final class OpenStackSwiftClient {
             headers.add(name: "X-Object-Meta-DeleteAfterRead", value: "on")
         }
 
-        let objectCheck = try await performObjectHead(objectName: objectName)
-        if objectCheck.status != .ok {
+        do {
+            let _ = try await performObjectHead(objectName: objectName)
+        } catch {
             let response = try await client.put("\(swiftStorageURL)/\(containerName)/\(objectName)", headers: headers, content: content)
             guard response.status == .created || response.status == .accepted else {
                 throw Abort(.internalServerError, reason: "Failed to upload content to Swift, status code: \(response.status)")
@@ -109,7 +117,7 @@ final class OpenStackSwiftClient {
     }
 
     // Perform the actual fetch operation (used inside retry logic)
-    private func performObjectHead(objectName: String) async throws -> ClientResponse {
+    private func performObjectHead(objectName: String) async throws -> HTTPHeaders {
         guard let swiftStorageURL = keystoneService.swiftStorageURL else {
             throw Abort(.internalServerError, reason: "Swift Storage URL not available")
         }
@@ -120,7 +128,13 @@ final class OpenStackSwiftClient {
             "X-Auth-Token": authToken
         ]
 
-        return try await client.send(.HEAD, headers: headers, to: "\(swiftStorageURL)/\(containerName)/\(objectName)")
+        let response = try await client.send(.HEAD, headers: headers, to: "\(swiftStorageURL)/\(containerName)/\(objectName)")
+
+        guard response.status == .ok || response.status == .accepted || response.status == .noContent else {
+            throw Abort(.internalServerError, reason: "Failed to fetch content from Swift, status code: \(response.status)")
+        }
+
+        return response.headers
     }
 
     // Perform the actual container create operation (used inside retry logic)
