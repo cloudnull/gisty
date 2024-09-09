@@ -22,8 +22,7 @@
             <h2 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">Welcome to Gisty</h2>
             <p class="mt-6 text-lg leading-8 text-gray-300">Easily share your content and gists with a simple link.
                 This platform lets you submit content, store it securely, and retrieve it anytime. Use the simple form
-                to submit your
-                content, and we'll generate a unique link for you to share.</p>
+                to submit your content, and we'll generate a unique link for you to share.</p>
         </div>
         <div class="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
             <p class="mt-6 text-lg leading-8 text-gray-300">Built from Open Infrastructure.</p>

@@ -100,6 +100,7 @@ final class WebController: RouteCollection {
                     "pasteHeaderLastModified": pasteContent.headers["Last-Modified"].first,
                     "pasteHeaderContentLength": pasteContent.headers["Content-Length"].first,
                     "pasteHeaderContentType": pasteContent.headers["Content-Type"].first,
+                    "pasteHeaderDeleteAfterRead": pasteContent.headers["X-Object-Meta-DeleteAfterRead"].first,
                     "currentPath": req.url.path,
                     "currentHash": contentHash,
                     "returnTime": String(duration)
