@@ -76,7 +76,7 @@ final class WebController: RouteCollection {
         // Upload the content to OpenStack Swift using the hash as the object name
         try await swiftClient.uploadContent(inputText, objectName: objectName, deleteAfterRead: deleteAfterRead)
         if deleteAfterRead == "off" {
-            return req.redirect(to: "/(objectName)", redirectType: .permanent)
+            return req.redirect(to: "/\(objectName)", redirectType: .permanent)
         } else {
             return req.redirect(to: "/\(objectName)/link", redirectType: .permanent)
         }
