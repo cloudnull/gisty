@@ -69,7 +69,6 @@ final class OpenStackKeystoneService {
         }
 
         guard response.status == .created else {
-            print(response.content)
             throw Abort(.unauthorized, reason: "Failed to authenticate with Keystone")
         }
 

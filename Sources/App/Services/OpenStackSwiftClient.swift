@@ -23,9 +23,13 @@ final class OpenStackSwiftClient {
     }
 
     // Method to upload content to OpenStack Swift with retry logic
-    func uploadContent(_ content: String, objectName: String) async throws {
+    func uploadContent(_ content: String, objectName: String, deleteAfterRead: String) async throws {
         try await retryOnUnauthorized {
-            try await self.performUpload(content: content, objectName: objectName)
+            try await self.performUpload(
+                content: content,
+                objectName: objectName,
+                deleteAfterRead: deleteAfterRead
+            )
         }
     }
 
@@ -46,47 +50,33 @@ final class OpenStackSwiftClient {
     // Method to fetch content from OpenStack Swift with retry logic
     func createContainer() async throws {
         return try await retryOnUnauthorized {
-            try await self.performCreate()
-        }
-    }
-
-    // Perform the actual create operation (used inside retry logic)
-    private func performCreate() async throws {
-        guard let swiftStorageURL = keystoneService.swiftStorageURL else {
-            throw Abort(.internalServerError, reason: "Swift Storage URL not available")
-        }
-
-        let authToken = try await keystoneService.getAuthToken()
-
-        let headers: HTTPHeaders = [
-            "X-Auth-Token": authToken,
-            "Content-Type": "text/plain"
-        ]
-
-        let response = try await client.put("\(swiftStorageURL)/\(containerName)", headers: headers)
-
-        guard response.status == .created || response.status == .accepted else {
-            throw Abort(.internalServerError, reason: "Failed to create Swift container, status code: \(response.status)")
+            try await self.performContainerCreate()
         }
     }
 
     // Perform the actual upload operation (used inside retry logic)
-    private func performUpload(content: String, objectName: String) async throws {
+    private func performUpload(content: String, objectName: String, deleteAfterRead: String) async throws {
         guard let swiftStorageURL = keystoneService.swiftStorageURL else {
             throw Abort(.internalServerError, reason: "Swift Storage URL not available")
         }
 
         let authToken = try await keystoneService.getAuthToken()
 
-        let headers: HTTPHeaders = [
+        var headers: HTTPHeaders = [
             "X-Auth-Token": authToken,
             "Content-Type": "text/plain"
         ]
 
-        let response = try await client.put("\(swiftStorageURL)/\(containerName)/\(objectName)", headers: headers, content: content)
+        if deleteAfterRead == "on" {
+            headers.add(name: "X-Object-Meta-DeleteAfterRead", value: "on")
+        }
 
-        guard response.status == .created || response.status == .accepted else {
-            throw Abort(.internalServerError, reason: "Failed to upload content to Swift, status code: \(response.status)")
+        let objectCheck = try await performObjectHead(objectName: objectName)
+        if objectCheck.status != .ok {
+            let response = try await client.put("\(swiftStorageURL)/\(containerName)/\(objectName)", headers: headers, content: content)
+            guard response.status == .created || response.status == .accepted else {
+                throw Abort(.internalServerError, reason: "Failed to upload content to Swift, status code: \(response.status)")
+            }
         }
     }
 
@@ -108,10 +98,49 @@ final class OpenStackSwiftClient {
             throw Abort(.internalServerError, reason: "Failed to fetch content from Swift, status code: \(response.status)")
         }
 
+        if response.headers["X-Object-Meta-DeleteAfterRead"].first == "on" {
+            let _ = try await client.delete("\(swiftStorageURL)/\(containerName)/\(objectName)", headers: headers)
+        }
+
         return returnType(
             content: response.body?.getString(at: 0, length: response.body?.readableBytes ?? 0) ?? "No content available",
             headers: response.headers
         )
+    }
+
+    // Perform the actual fetch operation (used inside retry logic)
+    private func performObjectHead(objectName: String) async throws -> ClientResponse {
+        guard let swiftStorageURL = keystoneService.swiftStorageURL else {
+            throw Abort(.internalServerError, reason: "Swift Storage URL not available")
+        }
+
+        let authToken = try await keystoneService.getAuthToken()
+
+        let headers: HTTPHeaders = [
+            "X-Auth-Token": authToken
+        ]
+
+        return try await client.send(.HEAD, headers: headers, to: "\(swiftStorageURL)/\(containerName)/\(objectName)")
+    }
+
+    // Perform the actual container create operation (used inside retry logic)
+    private func performContainerCreate() async throws {
+        guard let swiftStorageURL = keystoneService.swiftStorageURL else {
+            throw Abort(.internalServerError, reason: "Swift Storage URL not available")
+        }
+
+        let authToken = try await keystoneService.getAuthToken()
+
+        let headers: HTTPHeaders = [
+            "X-Auth-Token": authToken,
+            "Content-Type": "text/plain"
+        ]
+
+        let response = try await client.put("\(swiftStorageURL)/\(containerName)", headers: headers)
+
+        guard response.status == .created || response.status == .accepted else {
+            throw Abort(.internalServerError, reason: "Failed to create Swift container, status code: \(response.status)")
+        }
     }
 
     // Perform the actual fetch operation (used inside retry logic)

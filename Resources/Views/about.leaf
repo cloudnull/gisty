@@ -69,8 +69,8 @@
                                 OpenStack Swift
                             </dt>
                             <dd class="mt-2 text-base leading-7 text-gray-300">OpenStack Swift is used as object store.
-                                Everything processed by Gisty is an object. All objects are constently hashed giving
-                                users a simple method to retieve content while ensuring objects are efficiently stored.
+                                Everything processed by Gisty is an object. All objects are consistently hashed giving
+                                users a simple method to retrieve content while ensuring objects are efficiently stored.
                             </dd>
                         </div>
                         <div class="relative pl-16">
@@ -99,8 +99,8 @@
                 <dl class="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
                     <div class="mx-auto flex max-w-xs flex-col gap-y-4">
                         <dt class="text-base leading-7 text-gray-300 text-lg">#(lastModified)</dt>
-                        <dd class="order-first text-3xl font-semibold tracking-tight text-white sm:text-4xl">Last
-                            Modified</dd>
+                        <dd class="order-first text-3xl font-semibold tracking-tight text-white sm:text-4xl">Object Store
+                            Time</dd>
                     </div>
                     <div class="mx-auto flex max-w-xs flex-col gap-y-4">
                         <dt class="text-base leading-7 text-gray-300 text-lg">#(currentBytes)</dt>

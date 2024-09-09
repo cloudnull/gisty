@@ -1,0 +1,26 @@
+#extend("base"):
+#export("title"): Retrieved Content #endexport
+#export("content"):
+<link rel="stylesheet" href="/styles/github.css">
+<script src="/js/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+<div class="rounded-t-xl">
+    <div class="bg-gray-800 rounded-t-xl pt-8">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8 isolate overflow-hidden">
+            <div class="relative mx-auto max-w-2xl lg:mx-0 flex flex-col py-8">
+                <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl pb-4">Get the Gisty</h2>
+                <div class="rounded-md bg-gray-700 px-2 py-4 items-center justify-center text-center shadow-lg border-2 border-gray-600">
+                    <code class="mt-2 text-[11px] sm:text-sm md:text-lg leading-8 text-gray-300">https://gisty.link/#(currentHash)</code>
+                </div>
+                <div
+                    class="flex flex-col ml-auto absolute left-3/4 xl:left-full hidden lg:block top-96 -z-20 h-[64rem] w-[64rem] -translate-y-1/2">
+                    <img class="w-auto brightness-50 transition-all duration-300 cursor-pointer filter grayscale hover:grayscale-0"
+                        src="/assets/happy.png" alt="Sad paste">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+#endexport
+#endextend

@@ -44,10 +44,16 @@
 </div>
 
 <form action="/create" method="POST" class="mt-4">
-    <div class="mb-4">
+    <div class="mb-4"></div>
         <textarea id="textInput" name="textInput" rows="15" placeholder="Enter your content here..."
             class="w-full p-2 bg-gray-300 border-2 border-gray-700 rounded-lg text-gray-900 focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700"></textarea>
     </div>
+    <label class="inline-flex items-center cursor-pointer py-4">
+        <input id="deleteAfterRead" name="deleteAfterRead" type="checkbox" class="sr-only peer">
+        <div class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-lg peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
+        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Delete After Access</span>
+    </label>
+    <br />
     <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white py-2 px-4 rounded-lg">Submit</button>
 </form>
 #endexport
