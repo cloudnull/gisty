@@ -50,7 +50,14 @@
     <label class="inline-flex items-center cursor-pointer py-4">
         <input id="deleteAfterRead" name="deleteAfterRead" type="checkbox" class="sr-only peer">
         <div class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-lg peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
-        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Delete After Access</span>
+        <div class="ml-2 flex items-center text-sm text-gray-300 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 peer-checked:text-red-500">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+            <p class="px-2">Enable Delete on Access</p>
+        </div>
     </label>
     <br />
     <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white py-2 px-4 rounded-lg">Submit</button>
