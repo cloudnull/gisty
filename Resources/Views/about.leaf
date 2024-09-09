@@ -22,7 +22,7 @@
                     src="/assets/gisty.drawio.png" alt="Gisty Architecture">
             </div>
         </div>
-        <div class="bg-gray-700 py-24 sm:py-32">
+        <div class="bg-gray-700 py-24 sm:py-32 shadow-inner shadow-gray-900">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="mx-auto max-w-2xl lg:text-center">
                     <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -94,7 +94,23 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-700 py-24 sm:py-32 rounded-b-xl">
+        <div class="relative isolate overflow-hidden bg-gray-900 py-16 shadow-lg shadow-gray-700">
+            <img src="/assets/topology.png" alt="OpenStack Service Map"
+                class="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center brightness-5">
+            <div class="hidden sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl"
+                aria-hidden="true">
+                <div class="aspect-[1920/1080] w-[69rem] bg-gradient-to-tr from-[#49ff46] to-[#163332] opacity-30"
+                    style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
+                </div>
+            </div>
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl lg:mx-0">
+                    <h2 class="text-4xl font-bold tracking-tight text-white sm:text-4xl inline-flex items-center justify-center mr-4">Powered By OpenStack</h2><img class="w-8 pb-4 inline-flex " src="/assets/OpenStack-Logo-Mark.png">
+                    <p class="mt-6 text-lg leading-8 text-gray-300">This application runs with the simplicity and scale provided by an Open Cloud.</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-800 py-24 sm:py-32 rounded-b-xl">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <dl class="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
                     <div class="mx-auto flex max-w-xs flex-col gap-y-4">
