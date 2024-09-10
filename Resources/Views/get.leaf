@@ -8,11 +8,11 @@
 <div class="rounded-lg">
     <div class="lg:flex lg:items-center lg:justify-between">
         <div class="min-w-0 flex-1">
-            <p class="text-[12px] sm:text-[14px] md:text-lg lg:text-xl font-bold text-gray-300"><strong
+            <p class="text-[10px] sm:text-[14px] md:text-lg lg:text-xl font-bold text-gray-300 align-middle"><strong
                     class="font-semibold">Gisty:</strong>#(currentHash)
                     <button onclick="copyText()" data-copy-to-clipboard-target="gisty-copy-button"
                     data-tooltip-target="tooltip-copy-gisty-copy-button"
-                    class="absolute text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg p-2 inline-flex items-center justify-center">
+                    class="absolute text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg pl-2 inline-flex align-middle">
                     <span id="default-icon">
                         <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                             fill="currentColor" viewBox="0 0 18 20">
@@ -92,25 +92,22 @@
 #if(pasteContentHidden == "true"):
     <div class="pt-4">
         <div class="bg-gray-800 rounded-xl">
-            <div class="mx-auto max-w-7xl px-6 lg:px-8 isolate overflow-hidden">
-                <div class="relative mx-auto max-w-2xl lg:mx-0 flex flex-col py-8">
+            <div class="mx-auto px-6 lg:px-8 relative overflow-hidden isolate z-10">
+                    <img class="absolute end-1 z-20 hidden sm:block brightness-50 transition-all duration-300 cursor-pointer filter grayscale hover:grayscale-0 -translate-y-[10rem] translate-x-[10rem]"
+                        src="/assets/happy.png" alt="Happy paste">
+                <div class="relative mx-auto max-w-4xl lg:mx-0 flex flex-col py-8 z-30">
                     <h2 class="text-xl font-bold tracking-tight text-white sm:text-2xl pb-4">Get the Gisty</h2>
                     <div
-                        class="rounded-md bg-gray-700 pt-4 items-center justify-center text-center shadow-lg border-2 border-gray-600">
+                        class="rounded-md bg-gray-700 py-4 items-center justify-center text-center shadow-xl border-2 border-gray-600 overflow-hidden">
 #if(pasteContentHidden == "true"):
-                        <code class="mt-2 text-[7.5px] sm:text-[11px] md:text-[14px]">
+                        <code class="text-[10px] sm:text-[12px] md:text-[15px]">
                             https://gisty.link/#(currentHash)?reveal=false
                         </code>
 #else:
-                        <code class="mt-2 text-[9.7px] sm:text-[12.9px] md:text-[17px]">
+                        <code class="text-[10px] sm:text-[12.9px] md:text-[17px]">
                             https://gisty.link/#(currentHash)
                         </code>
 #endif
-                    </div>
-                    <div
-                        class="flex flex-col ml-auto absolute left-1/2 lg:left-3/4 xl:left-full hidden sm:block top-96 -z-20 h-[64rem] w-[64rem] -translate-y-1/2">
-                        <img class="w-auto brightness-50 transition-all duration-300 cursor-pointer filter grayscale hover:grayscale-0"
-                            src="/assets/happy.png" alt="Happy paste">
                     </div>
                 </div>
             </div>
