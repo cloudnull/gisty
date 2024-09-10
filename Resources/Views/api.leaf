@@ -26,30 +26,74 @@
     <div class="bg-gray-800 rounded-b-xl">
         <div class="mx-auto max-w-7xl px-6 lg:px-8 z-0 isolate overflow-hidden">
             <div
-                class="mx-auto isolate overflow-hidden z-10 mt-10 max-w-2xl gap-x-8 gap-y-16 border-t border-gray-400 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                class="mx-auto px-4 isolate overflow-hidden z-10 mt-10 max-w-2xl gap-x-8 gap-y-16 border-t border-gray-400 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
                 <article class="flex max-w-xl flex-col items-start justify-between">
                     <div class="flex items-center gap-x-4 text-xs">
                         <div class="rounded-xl bg-emerald-700 px-5 py-1.5 font-semibold text-gray-200">POST</div>
                     </div>
-                    <div class="group relative">
+                    <div class="group">
                         <h3 class="mt-3 text-lg font-semibold leading-6 text-gray-300">
                             Creating content on Gisty
                         </h3>
-                        <p class="mt-5 line-clamp-3 text-sm leading-6 text-gray-500">Creating content is simple, the
-                            following example was performed using <code>cURL</code>.</p>
+                        <div class="hidden sm:block relative overflow-x-auto shadow-md shadow-gray-900 rounded-lg">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                                    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">Creating content is simple with easy to understand options.</p>
+                                </caption>
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">
+                                            Key
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Type
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Description
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            textInput
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            String
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            Required string value to post to the API.
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            deleteAfterRead
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            String
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            Optional string, when set to "<strong class="text-red-600">on</strong>" the content posted will have delete after read enabled.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="relative mt-8 flex items-center gap-x-4">
                         <div class="text-sm leading-6">
                             <p class="font-semibold text-gray-300">
                                 GET Example
                                 <pre>
-                                    <code class="rounded-lg shadow-lg border-r-4 border-b-4 border-gray-900">
-curl -D - -X POST https://gisty.link/create -H "Content-Type: application/x-www-form-urlencoded" -d "textInput=thingames"
+                                    <code class="language-bash rounded-lg shadow-md shadow-gray-600">
+curl -D - -X POST https://gisty.link/create \
+          -H "Content-Type: application/x-www-form-urlencoded" \
+          -d "textInput=thingames"
                                     </code>
                                 </pre>
                                 <p>The command will return output with the location of the object.</p>
                                 <pre>
-                                    <code class="rounded-lg shadow-lg border-r-4 border-b-4 border-gray-900">
+                                    <code class="language-shell rounded-lg shadow-md shadow-gray-600">
 HTTP/1.1 303 See Other
 Server: nginx/1.22.1
 Date: Sun, 08 Sep 2024 19:43:10 GMT
@@ -64,7 +108,7 @@ location: /71b6eada156eeafee3feb6c464faf0edc8aa5636
                 </article>
             </div>
             <div
-                class="mx-auto isolate overflow-hidden z-10 mt-10 max-w-2xl gap-x-8 gap-y-16 border-t border-gray-400 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                class="mx-auto px-4 isolate overflow-hidden z-10 mt-10 max-w-2xl gap-x-8 gap-y-16 border-t border-gray-400 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
                 <article class="flex max-w-xl flex-col items-start justify-between">
                     <div class="flex items-center gap-x-4 text-xs">
                         <div class="rounded-xl bg-blue-500 px-5 py-1.5 font-semibold text-gray-200">GET</div>
@@ -74,21 +118,21 @@ location: /71b6eada156eeafee3feb6c464faf0edc8aa5636
                             Retrieving content from Gisty
                         </h3>
                         <p class="mt-5 line-clamp-3 text-sm leading-6 text-gray-500">Retrieving content is simple, the
-                            following example was performed using <code>cURL</code>.</p>
+                            following example was performed using <code>cURL</code>. Running Gisty commands on the <strong>raw</strong> endpoint will return only the plain text of the stored content; this means Gisty can be used with scripting via <strong>raw</strong>.</p>
                     </div>
                     <div class="relative mt-8 flex items-center gap-x-4">
                         <div class="text-sm leading-6">
                             <p class="font-semibold text-gray-300">
                                 GET Example
                             <pre>
-                                    <code class="rounded-lg shadow-lg border-r-4 border-b-4 border-gray-900">
+                                    <code class="language-bash rounded-lg shadow-md shadow-gray-600">
 curl -D - https://gisty.link/71b6eada156eeafee3feb6c464faf0edc8aa5636/raw
                                     </code>
                                 </pre>
                             <p>The command will return output from the content. Headers are available from the RAW
                                 content which express more information about it.</p>
                             <pre>
-                                    <code class="rounded-lg shadow-lg border-r-4 border-b-4 border-gray-900">
+                                    <code class="language-shell rounded-lg shadow-md shadow-gray-600">
 HTTP/1.1 200 OK
 Server: nginx/1.22.1
 Date: Sun, 08 Sep 2024 22:49:25 GMT
