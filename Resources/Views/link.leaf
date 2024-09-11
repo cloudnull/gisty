@@ -1,5 +1,5 @@
 #extend("base"):
-#export("title"): Retrieved Content #endexport
+#export("title"): Retrieved Content in the Link #endexport
 #export("content"):
 <div class="rounded-t-xl">
     <div class="bg-gray-800 rounded-t-xl pt-8">

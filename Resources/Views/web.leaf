@@ -1,7 +1,6 @@
 #extend("base"):
-#export("title"): Submit Content #endexport
+#export("title"): Submit Content to Gisty #endexport
 #export("content"):
-
 <div class="relative isolate overflow-hidden bg-gray-900 py-16 rounded-lg">
     <img src="/assets/openstack.png" alt="OpenStack Service Map"
         class="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center brightness-5 rounded-lg">

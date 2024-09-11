@@ -46,7 +46,7 @@
             </nav>
         </header>
         <!-- Main Content -->
-        <main class="container mx-auto mb-auto p-6">
+        <main class="container mx-auto mb-auto p-6 max-w-7xl">
             #import("content")
         </main>
         <!-- Footer -->
