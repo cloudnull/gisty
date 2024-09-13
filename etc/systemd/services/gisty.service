@@ -4,6 +4,9 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
+Restart=always
+RestartSec=5
+
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/podman kill gisty
 ExecStartPre=-/usr/bin/podman rm gisty

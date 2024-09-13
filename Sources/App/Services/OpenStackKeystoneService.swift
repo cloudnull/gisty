@@ -52,6 +52,7 @@ final class OpenStackKeystoneService {
 
     // Authenticate with Keystone and get the token
     func authenticate() async throws {
+        app.logger.info("Running authentication")
         let authPayload = KeystoneAuthPayload(
             auth: KeystoneAuthPayload.Auth(
                 identity: KeystoneAuthPayload.Auth.Identity(
@@ -65,6 +66,7 @@ final class OpenStackKeystoneService {
         )
 
         let response = try await client.post("\(authURL)/v3/auth/tokens", headers: ["Content-Type": "application/json"]) { req in
+            app.logger.debug("Authenticating against \(authURL)")
             try req.content.encode(authPayload)
         }
 
@@ -73,6 +75,7 @@ final class OpenStackKeystoneService {
         }
 
         if let token = response.headers["X-Subject-Token"].first {
+            app.logger.info("Storing authentication token")
             self.authToken = token
         } else {
             throw Abort(.internalServerError, reason: "No auth token returned from Keystone")
@@ -81,7 +84,6 @@ final class OpenStackKeystoneService {
         let catalog = try response.content.decode(KeystoneCatalogResponse.self)
         self.tokenExpiration = catalog.token.expires_at.toDate()
         self.swiftStorageURL = extractSwiftStorageURL(from: catalog)
-
         guard let _ = self.swiftStorageURL else {
             throw Abort(.internalServerError, reason: "Swift Storage URL not found in service catalog")
         }
@@ -90,6 +92,7 @@ final class OpenStackKeystoneService {
     // Check if the token is expired
     private func isTokenExpired() -> Bool {
         guard let expiration = tokenExpiration else {
+            app.logger.warning("No token expiry found \(String(describing: tokenExpiration))")
             return true
         }
         return Date() >= expiration
@@ -97,9 +100,12 @@ final class OpenStackKeystoneService {
 
     // Get cached auth token or authenticate if expired
     func getAuthToken() async throws -> String {
+        app.logger.debug("Getting a token")
         if let token = authToken, !isTokenExpired() {
+            app.logger.debug("Returning cached token")
             return token
         } else {
+            app.logger.info("Retrieving new token")
             try await authenticate()
             return authToken!
         }
@@ -108,6 +114,7 @@ final class OpenStackKeystoneService {
     private func extractSwiftStorageURL(from catalog: KeystoneCatalogResponse) -> String? {
         for service in catalog.token.catalog {
             if service.type == "object-store", let endpoint = service.endpoints.first(where: { $0.interface == "public" }) {
+                app.logger.info("Storing Swift Storage URL \(endpoint.url)")
                 return endpoint.url
             }
         }
@@ -118,6 +125,13 @@ final class OpenStackKeystoneService {
 extension String {
     func toDate() -> Date? {
         let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.formatOptions = [
+            .withFullDate,
+            .withFullTime,
+            .withDashSeparatorInDate,
+            .withFractionalSeconds]
+        app.logger.info("Storing token expiration date \(self)")
         return dateFormatter.date(from: self)
     }
 }

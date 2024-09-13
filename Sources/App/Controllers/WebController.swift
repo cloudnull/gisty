@@ -26,9 +26,9 @@ final class WebController: RouteCollection {
         let userContent = try req.content.decode(userInput.self)
         let deleteAfterRead = userContent.deleteAfterRead ?? "off"
         guard let inputText = userContent.textInput else {
+            req.logger.warning("Null content was provided on POST")
             return Response(status: .badRequest, body: .init(string: "No content provided."))
         }
-
         // This ensures that two users with the same content don't run into a hash collision should one of them enable delete on read.
         var hashedContent: Insecure.SHA1Digest
         if deleteAfterRead == "off" {
@@ -36,12 +36,15 @@ final class WebController: RouteCollection {
         } else {
             let randomHash = SHA512.hash(data: Data(inputText.utf8)).compactMap { String(format: "%02x", $0) }.joined() // Convert hash to a hex string
             hashedContent = Insecure.SHA1.hash(data: Data(randomHash.utf8))
+            req.logger.debug("Delete on Access \(hashedContent) hashed")
         }
         // Hash the content using SHA-1
         let objectName = hashedContent.compactMap { String(format: "%02x", $0) }.joined() // Convert hash to a hex string
 
         // Upload the content to OpenStack Swift using the hash as the object name
         try await swiftClient.uploadContent(inputText, objectName: objectName, deleteAfterRead: deleteAfterRead)
+        req.logger.info("Object \(objectName) submitted")
+
         if deleteAfterRead == "off" {
             return req.redirect(to: "/\(objectName)", redirectType: .permanent)
         } else {
@@ -78,6 +81,7 @@ final class WebController: RouteCollection {
             var reveal: String?
         }
         guard let contentHash = req.parameters.get("hashedContent") else {
+            req.logger.warning("No content has provided on GET")
             return try await req.view.render("error", ["content": "No content available", "currentPath": req.url.path,])
         }
         let queryParams = try req.query.decode(Params.self)
@@ -89,6 +93,7 @@ final class WebController: RouteCollection {
                     pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
                 }
                 let duration = Float(result.components.attoseconds) / 1000000000000000000.0
+                req.logger.debug("Returning revealing content \(contentHash)")
                 return try await req.view.render(
                     "get",
                     [
@@ -108,6 +113,7 @@ final class WebController: RouteCollection {
                     objectHeaders = try await swiftClient.fetchObjectHeaders(objectName: contentHash)
                 }
                 let duration = Float(result.components.attoseconds) / 1000000000000000000.0
+                req.logger.debug("Returning unrevealed content \(contentHash)")
                 return try await req.view.render(
                     "get",
                     [
@@ -123,6 +129,7 @@ final class WebController: RouteCollection {
                 )
             }
         } catch {
+            req.logger.error("Unexpected rendering error: \(error)")
             return try await req.view.render("error", ["content": "No content available", "currentPath": req.url.path,])
         }
     }
@@ -133,12 +140,18 @@ final class WebController: RouteCollection {
         }
         var pasteContent: OpenStackSwiftClient.returnType!
         let clock = ContinuousClock()
-        let result = try await clock.measure {
-            pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
+        do {
+            let result = try await clock.measure {
+                pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
+            }
+            let duration = Float(result.components.attoseconds) / 1000000000000000000.0
+            var headers = pasteContent.headers
+            headers.add(name: "X-Round-Trip-Time", value: String(duration))
+            req.logger.debug("Returning raw content \(contentHash)")
+            return Response(status: .ok, headers: headers, body: .init(string: pasteContent.content))
+        } catch {
+            req.logger.error("Unexpected raw error: \(error)")
+            return Response(status: .noContent, body: .init(string: pasteContent.content))
         }
-        let duration = Float(result.components.attoseconds) / 1000000000000000000.0
-        var headers = pasteContent.headers
-        headers.add(name: "X-Round-Trip-Time", value: String(duration))
-        return Response(status: .ok, headers: headers, body: .init(string: pasteContent.content))
     }
 }

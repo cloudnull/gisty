@@ -188,6 +188,7 @@ final class OpenStackSwiftClient {
                 return try await operation()
             } catch {
                 if let abortError = error as? AbortError, abortError.status == .unauthorized {
+                    app.logger.warning("Re attempting operation after recieving an error: \(abortError.reason)")
                     attempts += 1
                     if attempts < maxAttempts {
                         try await keystoneService.authenticate()
