@@ -49,8 +49,7 @@ final class WebController: RouteCollection {
         if deleteAfterRead == "off" {
             hashedContent = Insecure.SHA1.hash(data: Data(inputText.utf8))
         } else {
-            let randomHash = SHA512.hash(data: Data(inputText.utf8)).compactMap { String(format: "%02x", $0) }.joined() // Convert hash to a hex string
-            hashedContent = Insecure.SHA1.hash(data: Data(randomHash.utf8))
+            hashedContent = Insecure.SHA1.hash(data: Data(UUID().uuidString.utf8))
             req.logger.debug("Delete on Access \(hashedContent) hashed")
         }
         // Hash the content using SHA-1
