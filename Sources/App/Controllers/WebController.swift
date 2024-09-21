@@ -7,6 +7,21 @@ final class WebController: RouteCollection {
         self.swiftClient = swiftClient
     }
 
+    private func attoSecondsConvert(attoSeconds: Float) async -> String {
+        let seconds = attoSeconds / 1000000000000000000.0
+        return String(seconds)
+    }
+
+    private func timeIt<T>(_ operation: @escaping () async throws -> T) async throws -> (T, String) {
+        let clock = ContinuousClock()
+        var operationResults: T!
+        let result = try await clock.measure {
+            operationResults = try await operation()
+        }
+        let duration = await self.attoSecondsConvert(attoSeconds: Float(result.components.attoseconds))
+        return (operationResults, duration)
+    }
+
     func boot(routes: RoutesBuilder) throws {
         routes.get(use: renderWeb)
         routes.get("about", use: renderAbout)
@@ -42,9 +57,12 @@ final class WebController: RouteCollection {
         let objectName = hashedContent.compactMap { String(format: "%02x", $0) }.joined() // Convert hash to a hex string
 
         // Upload the content to OpenStack Swift using the hash as the object name
-        try await swiftClient.uploadContent(inputText, objectName: objectName, deleteAfterRead: deleteAfterRead)
+        let (_, duration) = try await timeIt{
+            try await self.swiftClient.uploadContent(inputText, objectName: objectName, deleteAfterRead: deleteAfterRead)
+        }
         req.logger.info("Object \(objectName) submitted")
-
+        try await self.swiftClient.copyStageContent(objectName, duration: duration)
+        req.logger.info("Object \(objectName) available")
         if deleteAfterRead == "off" {
             return req.redirect(to: "/\(objectName)", redirectType: .permanent)
         } else {
@@ -86,13 +104,10 @@ final class WebController: RouteCollection {
         }
         let queryParams = try req.query.decode(Params.self)
         do {
-            let clock = ContinuousClock()
             if queryParams.reveal == "true" || queryParams.reveal == nil {
-                var pasteContent: OpenStackSwiftClient.returnType!
-                let result = try await clock.measure {
-                    pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
+                let (pasteContent, duration) = try await timeIt{
+                    try await self.swiftClient.fetchContent(objectName: contentHash)
                 }
-                let duration = Float(result.components.attoseconds) / 1000000000000000000.0
                 req.logger.debug("Returning revealing content \(contentHash)")
                 return try await req.view.render(
                     "get",
@@ -102,17 +117,16 @@ final class WebController: RouteCollection {
                         "pasteHeaderContentLength": pasteContent.headers["Content-Length"].first,
                         "pasteHeaderContentType": pasteContent.headers["Content-Type"].first,
                         "pasteHeaderDeleteAfterRead": pasteContent.headers["X-Object-Meta-DeleteAfterRead"].first,
+                        "pasteHeaderCreateTime": pasteContent.headers["X-Object-Meta-CreateTime"].first,
                         "currentPath": req.url.path,
                         "currentHash": contentHash,
-                        "returnTime": String(duration)
+                        "returnTime": duration
                     ]
                 )
             } else {
-                var objectHeaders: HTTPHeaders!
-                let result = try await clock.measure {
-                    objectHeaders = try await swiftClient.fetchObjectHeaders(objectName: contentHash)
+                let (objectHeaders, duration) = try await timeIt{
+                    try await self.swiftClient.fetchObjectHeaders(objectName: contentHash)
                 }
-                let duration = Float(result.components.attoseconds) / 1000000000000000000.0
                 req.logger.debug("Returning unrevealed content \(contentHash)")
                 return try await req.view.render(
                     "get",
@@ -122,9 +136,10 @@ final class WebController: RouteCollection {
                         "pasteHeaderContentLength": objectHeaders["Content-Length"].first,
                         "pasteHeaderContentType": objectHeaders["Content-Type"].first,
                         "pasteHeaderDeleteAfterRead": objectHeaders["X-Object-Meta-DeleteAfterRead"].first,
+                        "pasteHeaderCreateTime": objectHeaders["X-Object-Meta-CreateTime"].first,
                         "currentPath": req.url.path,
                         "currentHash": contentHash,
-                        "returnTime": String(duration)
+                        "returnTime": duration
                     ]
                 )
             }
@@ -138,20 +153,17 @@ final class WebController: RouteCollection {
         guard let contentHash = req.parameters.get("hashedContent") else {
             return Response(status: .notFound, body: .init(string: "No content available"))
         }
-        var pasteContent: OpenStackSwiftClient.returnType!
-        let clock = ContinuousClock()
         do {
-            let result = try await clock.measure {
-                pasteContent = try await swiftClient.fetchContent(objectName: contentHash)
+            let (pasteContent, duration) = try await timeIt{
+                try await self.swiftClient.fetchContent(objectName: contentHash)
             }
-            let duration = Float(result.components.attoseconds) / 1000000000000000000.0
             var headers = pasteContent.headers
-            headers.add(name: "X-Round-Trip-Time", value: String(duration))
+            headers.add(name: "X-Object-Meta-ReturnTime", value: duration)
             req.logger.debug("Returning raw content \(contentHash)")
             return Response(status: .ok, headers: headers, body: .init(string: pasteContent.content))
         } catch {
             req.logger.error("Unexpected raw error: \(error)")
-            return Response(status: .noContent, body: .init(string: pasteContent.content))
+            return Response(status: .noContent, body: .init(string: "No content available"))
         }
     }
 }

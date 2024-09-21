@@ -33,6 +33,15 @@ final class OpenStackSwiftClient {
         }
     }
 
+    func copyStageContent(_ objectName: String, duration: String) async throws {
+        try await retryOnUnauthorized {
+            try await self.performStageCopy(
+                objectName: objectName,
+                duration: duration
+            )
+        }
+    }
+
     // Method to fetch content from OpenStack Swift with retry logic
     func fetchContent(objectName: String) async throws -> returnType {
         return try await retryOnUnauthorized {
@@ -81,10 +90,56 @@ final class OpenStackSwiftClient {
         do {
             let _ = try await performObjectHead(objectName: objectName)
         } catch {
-            let response = try await client.put("\(swiftStorageURL)/\(containerName)/\(objectName)", headers: headers, content: content)
+            let response = try await client.put(
+                "\(swiftStorageURL)/\(containerName)/\(objectName).stage",
+                headers: headers,
+                content: content
+            )
             guard response.status == .created || response.status == .accepted else {
                 throw Abort(.internalServerError, reason: "Failed to upload content to Swift, status code: \(response.status)")
             }
+            app.logger.info("\(objectName).stage created")
+        }
+    }
+
+    // Perform the actual copy operation (used inside retry logic)
+    private func performStageCopy(objectName: String, duration: String) async throws {
+        guard let swiftStorageURL = keystoneService.swiftStorageURL else {
+            throw Abort(.internalServerError, reason: "Swift Storage URL not available")
+        }
+
+        let authToken = try await keystoneService.getAuthToken()
+
+        var headers: HTTPHeaders = [
+            "X-Auth-Token": authToken,
+            "Content-Type": "text/plain",
+        ]
+
+        do {
+            let _ = try await performObjectHead(objectName: objectName)
+        } catch {
+            let existingObject = try await performObjectHead(objectName: "\(objectName).stage")
+
+            headers.add(name: "Content-Length", value: existingObject["Content-Length"].first ?? "0")
+            headers.add(name: "X-Copy-From", value: "/\(containerName)/\(objectName).stage")
+            headers.add(name: "X-Object-Meta-CreateTime", value: duration)
+            let putResponse = try await client.put(
+                "\(swiftStorageURL)/\(containerName)/\(objectName)",
+                headers: headers
+            )
+            guard putResponse.status == .created || putResponse.status == .accepted else {
+                throw Abort(.internalServerError, reason: "Failed to copy stage object to final object in Swift, status code: \(putResponse.status)")
+            }
+            app.logger.info("\(objectName).stage copied to \(objectName)")
+
+            headers.remove(name: "X-Copy-From")
+            headers.remove(name: "X-Object-Meta-CreateTime")
+            headers.remove(name: "Content-Length")
+            let deleteResponse = try await client.delete("\(swiftStorageURL)/\(containerName)/\(objectName).stage", headers: headers)
+            guard deleteResponse.status == .accepted || deleteResponse.status == .noContent else {
+                throw Abort(.internalServerError, reason: "Failed remove stage object for \(objectName).stage, status code: \(deleteResponse.status)")
+            }
+            app.logger.info("\(objectName).stage removed")
         }
     }
 
