@@ -1,30 +1,24 @@
-name: Build and publish Docker image to GHCR
+name: Build, scan and publish Docker image
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  IMAGE_TAG: pr-${{ github.sha }}
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+      pull-requests: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Docker metadata
         id: meta
@@ -32,10 +26,34 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push image
+      - name: Log in to GHCR
+        if: github.event.pull_request.merged == true
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          push: ${{ github.event.pull_request.merged == true }}
+          load: ${{ github.event.pull_request.merged != true }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Scan image with Trivy
+        if: github.event.pull_request.merged != true
+        uses: aquasecurity/trivy-action@v0.22.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          format: table
+          exit-code: 0
+          output: trivy-results.txt
+
+      - name: Add Trivy report to summary
+        if: github.event.pull_request.merged != true
+        run: cat trivy-results.txt >> $GITHUB_STEP_SUMMARY
