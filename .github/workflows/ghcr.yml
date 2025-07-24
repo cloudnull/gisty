@@ -47,7 +47,7 @@ jobs:
 
       - name: Scan image with Trivy
         if: github.event.pull_request.merged != true
-        uses: aquasecurity/trivy-action@v0.22.0
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           format: table
